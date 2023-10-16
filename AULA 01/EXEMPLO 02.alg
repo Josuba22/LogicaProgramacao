@@ -1,9 +1,10 @@
 algoritmo "Criando Variáveis"
 
-var x: inteiro
+var idade: inteiro
 
 inicio
-    x <- 5
-    escreva (x)
+    
+    idade <- 5
+    escreva ("Eu tenho: " + idade)
 
 fimalgoritmo
