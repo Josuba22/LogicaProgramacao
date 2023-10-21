@@ -5,6 +5,6 @@ var idade: inteiro
 inicio
     
     idade <- 5
-    escreva (x)
+    escreva ("Eu tenho: " + idade)
 
 fimalgoritmo
