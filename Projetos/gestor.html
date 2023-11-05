@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Gerenciamento de Estoque</title>
+    <link rel="stylesheet" href="style-gestor.css">
+</head>
+
+<body>
+    <h1>Gerenciamento de Estoque</h1>
+    
+    <div>
+        <label for="nome">Nome do Produto:</label>
+        <input type="text" id="nome">
+    </div>
+    <div>
+        <label for="quantidade">Quantidade em Estoque:</label>
+        <input type="number" id="quantidade">
+    </div>
+    <div>
+        <label for="preco">Preço Unitário:</label>
+        <input type="number" step="0.01" id="preco">
+    </div>
+    <div>
+        <input type="submit" value="Adicionar Produto" onclick="adicionarProduto()">
+    </div>
+
+    <table id="estoqueTable">
+        <tr>
+            <th>Nome do Produto</th>
+            <th>Quantidade em Estoque</th>
+            <th>Preço Unitário</th>
+        </tr>
+    </table>
+
+    <div>
+        <button class="btn" onclick="gerarPlanilha()">Gerar Planilha</button>
+    </div>
+
+    <script>
+        var produtos = [];
+
+        function Produto(nome, quantidade, preco_unitario) {
+            this.nome = nome;
+            this.quantidade = quantidade;
+            this.preco_unitario = preco_unitario;
+        }
+
+        Produto.prototype.calcularPrecoConsumidor = function(margem_lucro) {
+            var preco_consumidor = this.preco_unitario * (1 + margem_lucro);
+            return preco_consumidor;
+        };
+
+        function adicionarProduto() {
+            var nome = document.getElementById("nome").value;
+            var quantidade = parseInt(document.getElementById("quantidade").value);
+            var preco_unitario = parseFloat(document.getElementById("preco").value);
+
+            var produto = new Produto(nome, quantidade, preco_unitario);
+            produtos.push(produto);
+
+            adicionarLinhaTabela(produto);
+
+            document.getElementById("nome").value = "";
+            document.getElementById("quantidade").value = "";
+            document.getElementById("preco").value = "";
+        }
+
+        function adicionarLinhaTabela(produto) {
+            var table = document.getElementById("estoqueTable");
+
+            var row = table.insertRow();
+            var nomeCell = row.insertCell();
+            var quantidadeCell = row.insertCell();
+            var precoCell = row.insertCell();
+
+            nomeCell.textContent = produto.nome;
+            quantidadeCell.textContent = produto.quantidade;
+            precoCell.textContent = produto.preco_unitario.toFixed(2);
+        }
+
+        function gerarPlanilha() {
+            var csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Nome do Produto,Quantidade em Estoque,Preço Unitário,Preço Consumidor Final\n";
+
+            for (var i = 0; i < produtos.length; i++) {
+                var produto = produtos[i];
+                var precoConsumidor = produto.calcularPrecoConsumidor(0.2);
+
+                csvContent += produto.nome + "," + produto.quantidade + "," + produto.preco_unitario.toFixed(2) + "," + precoConsumidor.toFixed(2) + "\n";
+            }
+
+            var encodedUri = encodeURI(csvContent);
+            var link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "estoque.csv");
+            document.body.appendChild(link); // Needed for Firefox
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
